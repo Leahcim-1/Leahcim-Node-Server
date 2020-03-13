@@ -8,7 +8,7 @@ var mongoose = require('mongoose');
 const connectDB = require('../MongoDB/index')
 const qs = require('qs');
 
-var upload = multer({dest: './static/'});
+var upload = multer({ dest: './static/' });
 
 var blogRouter = express.Router();
 blogRouter.use(bodyParser.json());
@@ -34,18 +34,18 @@ blogRouter.get('/init_blog', (req, res) => {
         catagory = [...result]
     })
     // Check Are there any empty documents
-    Blog.find({title: ""}, (err, result) => {
-       if (result) {
+    Blog.find({ title: "" }, (err, result) => {
+        if (result) {
             result.forEach(docs => {
                 docs.remove(err => {
                     if (err) {
                         console.log(err);
                     }
                 })
-           })
-       }
-     })
-    Blog.create({title: ""})
+            })
+        }
+    })
+    Blog.create({ title: "" })
         .then(docs => {
             console.log(docs._id);
             res.send({
@@ -61,15 +61,15 @@ blogRouter.post('/upload_cover', upload.single("image"), (req, res) => {
 
     let storePath = `static/${req.body.id}/`
 
-    if (!fs.existsSync(`${global}/${storePath}`)){
+    if (!fs.existsSync(`${global}/${storePath}`)) {
         fs.mkdirSync(storePath)
     };
-    
+
     storePath = storePath + 'cover/'
     console.log(storePath);
     fs.mkdirSync(storePath);
 
-    let picPath = storePath + Date.now() + parseInt(Math.random() * 2)+req.file.originalname;
+    let picPath = storePath + Date.now() + parseInt(Math.random() * 2) + req.file.originalname;
 
     fs.rename(req.file.path, picPath, err => {
         if (err) {
@@ -82,14 +82,14 @@ blogRouter.post('/upload_cover', upload.single("image"), (req, res) => {
 
         console.log(req.file)
 
-        Blog.findByIdAndUpdate(req.body.id, {coverPicPath: `${picPath}`}, (err, result) => {
-            if (err){
+        Blog.findByIdAndUpdate(req.body.id, { coverPicPath: `${picPath}` }, (err, result) => {
+            if (err) {
                 return res.send({
                     code: 1,
                     message: "Save Cover Picture Fails"
                 })
             }
-            if(result) {
+            if (result) {
                 res.send({
                     code: 0,
                     coverPicPath: picPath
@@ -97,7 +97,7 @@ blogRouter.post('/upload_cover', upload.single("image"), (req, res) => {
             }
         });
     })
-        
+
 })
 
 // Add Blog
@@ -108,19 +108,19 @@ blogRouter.post('/add_blog', (req, res) => {
         let isDraft = blog.isDraft;
 
         if (isDraft === "true") {
-            Draft.create({blogId: `${blog.id}`})
-            .then(result => {
-                res.send({
-                    code: 0,
-                    message: "Successfully Save Your Draft"
+            Draft.create({ blogId: `${blog.id}` })
+                .then(result => {
+                    res.send({
+                        code: 0,
+                        message: "Successfully Save Your Draft"
+                    })
                 })
-            })
-            .catch(err => {
-                res.send({
-                    code: 1,
-                    message: "Fail To Save Your Draft Due To" + err,
+                .catch(err => {
+                    res.send({
+                        code: 1,
+                        message: "Fail To Save Your Draft Due To" + err,
+                    })
                 })
-            })
         }
         else {
             Blog.findByIdAndUpdate(blog.id, blog, err => {
@@ -141,18 +141,49 @@ blogRouter.post('/add_blog', (req, res) => {
 
 //Show blog
 blogRouter.get('/get_blog', (req, res) => {
-    if (req) {
-        const condition = req.query;
-        Blog.find( condition, (err, result) => {
-            if (!err) {
-                res.send({
-                    code: 0,
-                    blogs: result
-                })
-            }
-        })
-    }
+    const condition = req.query;
+    Blog.find(condition, (err, result) => {
+        if (!err) {
+            res.send({
+                code: 0,
+                blogs: result
+            })
+        }
+    })
 })
+
+//Edit Blog 
+blogRouter.put('/edit_blog', (req, res) => {
+    const docs = req.body.docs;
+    Blog.findByIdAndUpdate(req.body.id, docs, (err, result) => {
+        if (err) {
+            res.end({
+                code: 1,
+                message: "Update Fail Due To" + err
+            })
+        }
+        res.send({
+            code: 0,
+            message: "Update Successfully!"
+        })
+    })
+})
+
+blogRouter.delete('/delete_blog', (req, res) => {
+    Blog.findByIdAndDelete(req.body.id, (err, result) => {
+        if (err) {
+            res.end({
+                code: 1,
+                message: "Delete Fail Due To" + err
+            })
+        }
+        res.send({
+            code: 0,
+            message: "Delete Successfully!"
+        })
+    })
+})
+
 
 
 module.exports = blogRouter;

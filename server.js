@@ -13,7 +13,7 @@ var app = express();
     })
  
 
-var server = app.listen(20000, "localhost", function ( ) {
+var server = app.listen(20000, function ( ) {
     var host = server.address().address
     var port = server.address().port
     
