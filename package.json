@@ -1,0 +1,30 @@
+{
+  "name": "nodeserver",
+  "version": "1.0.0",
+  "description": "An express server for leahcim blog",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "nodemon server.js"
+  },
+  "keywords": [
+    "Node.js",
+    "Express"
+  ],
+  "author": "leahcim",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Leahcim-1/Leahcim-Node-Server.git"
+},
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.4",
+    "multer": "^1.4.2",
+    "path": "^0.12.7",
+    "qs": "^6.9.1"
+  }
+}
